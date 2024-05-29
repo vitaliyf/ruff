@@ -278,6 +278,11 @@ impl<T> Program<T> {
         self.errors
     }
 
+    /// Consumes the [`Program`] and returns the comment ranges found during parsing.
+    pub fn into_comment_ranges(self) -> CommentRanges {
+        self.comment_ranges
+    }
+
     /// Returns `true` if the program is valid i.e., it has no syntax errors.
     pub fn is_valid(&self) -> bool {
         self.errors.is_empty()

@@ -1,7 +1,6 @@
 use insta::assert_debug_snapshot;
 
-use ruff_python_parser::lexer::lex;
-use ruff_python_parser::{parse_module, Mode, Tok};
+use ruff_python_parser::parse_module;
 use ruff_python_trivia::{lines_after, lines_before, SimpleToken, SimpleTokenizer};
 use ruff_python_trivia::{BackwardsTokenizer, SimpleTokenKind};
 use ruff_text_size::{TextLen, TextRange, TextSize};

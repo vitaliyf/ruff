@@ -1,5 +1,4 @@
-use ruff_python_index::Indexer;
-use ruff_python_parser::{parse_module, tokenize, Mode};
+use ruff_python_parser::parse_module;
 use ruff_source_file::Locator;
 use ruff_text_size::TextSize;
 

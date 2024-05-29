@@ -36,8 +36,6 @@ mod indentation;
 
 #[deprecated]
 pub fn lex(_source: &str, _mode: Mode) {}
-#[deprecated]
-pub fn lex_starts_at(_source: &str, _mode: Mode, _offset: TextSize) {}
 
 /// A lexer for Python source code.
 #[derive(Debug)]
@@ -180,7 +178,10 @@ impl<'src> Lexer<'src> {
     fn lex_identifier(&mut self, first: char) -> TokenKind {
         // Detect potential string like rb'' b'' f'' u'' r''
         let quote = match (first, self.cursor.first()) {
-            (_, quote @ ('\'' | '"')) => self.try_single_char_prefix(first).then_some(quote),
+            (_, quote @ ('\'' | '"')) => self.try_single_char_prefix(first).then(|| {
+                self.cursor.bump();
+                quote
+            }),
             (_, second) if is_quote(self.cursor.second()) => {
                 self.try_double_char_prefix([first, second]).then(|| {
                     self.cursor.bump();
@@ -573,7 +574,7 @@ impl<'src> Lexer<'src> {
         }
 
         if self.cursor.eat_char2(quote, quote) {
-            self.current_flags = TokenFlags::TRIPLE_QUOTED_STRING;
+            self.current_flags |= TokenFlags::TRIPLE_QUOTED_STRING;
         }
 
         self.fstrings
@@ -734,7 +735,7 @@ impl<'src> Lexer<'src> {
         // If the next two characters are also the quote character, then we have a triple-quoted
         // string; consume those two characters and ensure that we require a triple-quote to close
         if self.cursor.eat_char2(quote, quote) {
-            self.current_flags = TokenFlags::TRIPLE_QUOTED_STRING;
+            self.current_flags |= TokenFlags::TRIPLE_QUOTED_STRING;
         }
 
         let value_start = self.offset();
